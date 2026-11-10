@@ -4,62 +4,59 @@
 ======================================== */
 
 const taskForm = document.getElementById("task-form");
-
 const taskInput = document.getElementById("task-input");
-
 const taskPriority = document.getElementById("task-priority");
-
 const taskDeadline = document.getElementById("task-deadline");
-
 const taskList = document.getElementById("task-list");
 
-const filterButtons = document.querySelectorAll(".filter-btn");
-
-// Cartões de resumo
 const totalTasks = document.getElementById("total-tasks");
-
 const completedTasks = document.getElementById("completed-tasks");
-
 const pendingTasks = document.getElementById("pending-tasks");
-
 const overdueTasks = document.getElementById("overdue-tasks");
 
-// Barra de progresso
 const progressPercentage = document.getElementById("progress-percentage");
-
 const progressFill = document.getElementById("progress-fill");
-
 const progressText = document.getElementById("progress-text");
+
+const currentDate = document.getElementById("current-date");
+
+/* ELEMENTOS DO MODAL */
+
+const taskModal = document.getElementById("task-modal");
+const modalIcon = document.getElementById("modal-icon");
+const modalTitle = document.getElementById("modal-title");
+const modalMessage = document.getElementById("modal-message");
+
+const modalInputGroup = document.getElementById("modal-input-group");
+const modalPriorityGroup = document.getElementById("modal-priority-group");
+const modalDeadlineGroup = document.getElementById("modal-deadline-group");
+
+const modalTaskInput = document.getElementById("modal-task-input");
+const modalTaskPriority = document.getElementById("modal-task-priority");
+const modalTaskDeadline = document.getElementById("modal-task-deadline");
+
+const modalCancelBtn = document.getElementById("modal-cancel-btn");
+const modalConfirmBtn = document.getElementById("modal-confirm-btn");
 
 
 /* ========================================
-   ARMAZENAMENTO DAS TAREFAS
+   DADOS E CONFIGURAÇÕES
 ======================================== */
 
-// Recupera as tarefas salvas no navegador
 let tasks = [];
 
 try {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks"));
 
-    const savedTasks = localStorage.getItem("tasks");
-
-    tasks = savedTasks ? JSON.parse(savedTasks) : [];
-
-    // Garante que os dados recuperados sejam um array
-    if (!Array.isArray(tasks)) {
-        tasks = [];
-    }
+    tasks = Array.isArray(savedTasks) ? savedTasks : [];
 
 } catch (error) {
-
-    console.error("Erro ao recuperar tarefas:", error);
-
     tasks = [];
-
 }
 
-// Filtro atual
 let currentFilter = "all";
+let modalMode = "";
+let selectedTaskId = null;
 
 
 /* ========================================
@@ -67,9 +64,7 @@ let currentFilter = "all";
 ======================================== */
 
 function saveTasks() {
-
     localStorage.setItem("tasks", JSON.stringify(tasks));
-
 }
 
 
@@ -78,22 +73,43 @@ function saveTasks() {
 ======================================== */
 
 function getToday() {
-
     const today = new Date();
 
     const year = today.getFullYear();
-
     const month = String(today.getMonth() + 1).padStart(2, "0");
-
     const day = String(today.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
+}
 
+function updateCurrentDate() {
+    if (!currentDate) return;
+
+    const today = new Date();
+
+    currentDate.textContent = today.toLocaleDateString("pt-BR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
 }
 
 
 /* ========================================
-   ADICIONAR TAREFAS
+   VERIFICAR TAREFA ATRASADA
+======================================== */
+
+function isTaskOverdue(task) {
+    return (
+        task.deadline &&
+        task.deadline < getToday() &&
+        !task.completed
+    );
+}
+
+
+/* ========================================
+   ADICIONAR TAREFA
 ======================================== */
 
 function addTask(event) {
@@ -103,8 +119,8 @@ function addTask(event) {
     const priority = taskPriority.value;
     const deadline = taskDeadline.value;
 
-    if (title === "") {
-        alert("Por favor, digite o nome da tarefa.");
+    if (!title) {
+        taskInput.focus();
         return;
     }
 
@@ -122,10 +138,7 @@ function addTask(event) {
     renderTasks();
     updateDashboard();
 
-    // Limpa os campos após adicionar a tarefa
     taskForm.reset();
-
-    // Deixa o cursor novamente no campo de tarefa
     taskInput.focus();
 }
 
@@ -135,19 +148,13 @@ function addTask(event) {
 ======================================== */
 
 function formatPriority(priority) {
-
     const priorities = {
-
         alta: "Alta",
-
         media: "Média",
-
         baixa: "Baixa"
-
     };
 
     return priorities[priority] || priority;
-
 }
 
 
@@ -156,110 +163,165 @@ function formatPriority(priority) {
 ======================================== */
 
 function formatDate(date) {
-
     if (!date) {
-
         return "Sem prazo definido";
-
     }
 
     const [year, month, day] = date.split("-");
 
     return `${day}/${month}/${year}`;
-
 }
 
 
 /* ========================================
-   EDITAR TAREFAS
+   ABRIR MODAL
+======================================== */
+
+function openModal() {
+    taskModal.classList.add("active");
+    taskModal.setAttribute("aria-hidden", "false");
+}
+
+
+/* ========================================
+   FECHAR MODAL
+======================================== */
+
+function closeModal() {
+    taskModal.classList.remove("active");
+    taskModal.setAttribute("aria-hidden", "true");
+
+    modalTaskInput.value = "";
+    modalTaskDeadline.value = "";
+    modalTaskPriority.value = "alta";
+
+    modalMode = "";
+    selectedTaskId = null;
+}
+
+
+/* ========================================
+   EDITAR TAREFA
 ======================================== */
 
 function editTask(id) {
-
-    const task = tasks.find(function (item) {
-
-        return item.id === id;
-
-    });
+    const task = tasks.find(
+        task => task.id === Number(id)
+    );
 
     if (!task) return;
 
-    const newTitle = prompt(
-        "Digite o novo nome da tarefa:",
-        task.title
-    );
+    modalMode = "edit";
+    selectedTaskId = task.id;
 
-    if (newTitle === null) return;
+    modalTitle.textContent = "Editar tarefa";
+    modalMessage.textContent = "Altere os dados da sua tarefa.";
 
-    if (newTitle.trim() === "") {
+    modalIcon.classList.remove("delete");
+    modalIcon.innerHTML = '<i class="bi bi-pencil-square"></i>';
 
-        alert("O nome da tarefa não pode ficar vazio.");
+    modalInputGroup.style.display = "flex";
+    modalPriorityGroup.style.display = "flex";
+    modalDeadlineGroup.style.display = "flex";
 
-        return;
+    modalTaskInput.value = task.title;
+    modalTaskPriority.value = task.priority || "media";
+    modalTaskDeadline.value = task.deadline || "";
 
-    }
+    modalConfirmBtn.textContent = "Salvar alterações";
 
-    task.title = newTitle.trim();
-
-    saveTasks();
-
-    renderTasks();
-
-    updateDashboard();
-
+    openModal();
+    modalTaskInput.focus();
 }
 
 
 /* ========================================
-   EXCLUIR TAREFAS
+   EXCLUIR TAREFA
 ======================================== */
 
 function deleteTask(id) {
-
-    const task = tasks.find(function (item) {
-
-        return item.id === id;
-
-    });
+    const task = tasks.find(
+        task => task.id === Number(id)
+    );
 
     if (!task) return;
 
-    const confirmation = confirm(
-        `Deseja realmente excluir a tarefa "${task.title}"?`
-    );
+    modalMode = "delete";
+    selectedTaskId = task.id;
 
-    if (!confirmation) return;
+    modalTitle.textContent = "Excluir tarefa";
 
-    tasks = tasks.filter(function (item) {
+    modalMessage.textContent =
+        "Tem certeza de que deseja excluir esta tarefa? Essa ação não poderá ser desfeita.";
 
-        return item.id !== id;
+    modalIcon.classList.add("delete");
+    modalIcon.innerHTML = '<i class="bi bi-trash"></i>';
 
-    });
+    modalInputGroup.style.display = "none";
+    modalPriorityGroup.style.display = "none";
+    modalDeadlineGroup.style.display = "none";
 
-    saveTasks();
+    modalConfirmBtn.textContent = "Excluir tarefa";
 
-    renderTasks();
-
-    updateDashboard();
-
+    openModal();
 }
 
 
 /* ========================================
-   CONCLUIR TAREFAS
+   CONFIRMAR AÇÃO DO MODAL
+======================================== */
+
+function confirmModalAction() {
+
+    if (modalMode === "edit") {
+
+        const title = modalTaskInput.value.trim();
+
+        if (!title) {
+            modalTaskInput.focus();
+            return;
+        }
+
+        const task = tasks.find(
+            task => task.id === selectedTaskId
+        );
+
+        if (!task) return;
+
+        task.title = title;
+        task.priority = modalTaskPriority.value;
+        task.deadline = modalTaskDeadline.value;
+
+    } else if (modalMode === "delete") {
+
+        tasks = tasks.filter(
+            task => task.id !== selectedTaskId
+        );
+
+    } else {
+        return;
+    }
+
+    saveTasks();
+    renderTasks();
+    updateDashboard();
+
+    closeModal();
+}
+
+
+/* ========================================
+   CONCLUIR OU REABRIR TAREFA
 ======================================== */
 
 function toggleTask(id) {
-    tasks = tasks.map(task => {
-        if (task.id === id) {
-            return {
-                ...task,
-                completed: !task.completed
-            };
-        }
+    const task = tasks.find(
+        task => task.id === Number(id)
+    );
 
-        return task;
-    });
+    if (!task) return;
+
+    task.completed = !task.completed;
 
     saveTasks();
     renderTasks();
@@ -272,277 +334,231 @@ function toggleTask(id) {
 ======================================== */
 
 function filterTasks(filter) {
-
     currentFilter = filter;
 
-    filterButtons.forEach(function (button) {
-
+    document.querySelectorAll("[data-filter]").forEach(button => {
         button.classList.toggle(
             "active",
             button.dataset.filter === filter
         );
-
     });
 
     renderTasks();
-
 }
 
 
 /* ========================================
-   ATUALIZAR PAINEL DE RESUMO
+   ATUALIZAR PAINEL
 ======================================== */
 
 function updateDashboard() {
+
     const total = tasks.length;
 
-    const completed = tasks.filter(task => task.completed).length;
+    const completed = tasks.filter(
+        task => task.completed
+    ).length;
 
-    const pending = total - completed;
+    const pending = tasks.filter(
+        task => !task.completed
+    ).length;
 
-    const today = getToday();
+    const overdue = tasks.filter(
+        task => isTaskOverdue(task)
+    ).length;
 
-    const overdue = tasks.filter(task => {
-        return !task.completed &&
-            task.deadline !== "" &&
-            task.deadline < today;
-    }).length;
+    const percentage = total > 0
+        ? Math.round((completed / total) * 100)
+        : 0;
 
-    // Atualiza os cartões
     totalTasks.textContent = total;
     completedTasks.textContent = completed;
     pendingTasks.textContent = pending;
     overdueTasks.textContent = overdue;
 
-    // Calcula o progresso
-    const percentage = total === 0
-        ? 0
-        : Math.round((completed / total) * 100);
-
     progressPercentage.textContent = `${percentage}%`;
     progressFill.style.width = `${percentage}%`;
-    progressText.textContent = `${completed} de ${total} tarefas concluídas`;
+
+    progressText.textContent =
+        `${completed} de ${total} tarefas concluídas`;
 }
 
 
 /* ========================================
-   EXIBIR TAREFAS NA TELA
+   PROTEGER TEXTO INSERIDO PELO USUÁRIO
+======================================== */
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, character => {
+
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+
+        return entities[character];
+    });
+}
+
+
+/* ========================================
+   MOSTRAR TAREFAS
 ======================================== */
 
 function renderTasks() {
 
-    taskList.innerHTML = "";
+    let filteredTasks = [...tasks];
 
-    // Aplica os filtros
-    const filteredTasks = tasks.filter(function (task) {
-
-        if (currentFilter === "pending") {
-
-            return !task.completed;
-
-        }
-
-        if (currentFilter === "completed") {
-
-            return task.completed;
-
-        }
-
-        return true;
-
-    });
-
-
-    // Verifica se existem tarefas
-    if (filteredTasks.length === 0) {
-
-        const emptyMessage = document.createElement("div");
-
-        emptyMessage.className = "empty-message";
-
-        const icon = document.createElement("i");
-
-        const paragraph = document.createElement("p");
-
-
-        if (tasks.length === 0) {
-
-            icon.className = "bi bi-clipboard-x";
-
-            paragraph.textContent =
-                "Nenhuma tarefa cadastrada.";
-
-        } else if (currentFilter === "pending") {
-
-            icon.className = "bi bi-check-circle";
-
-            paragraph.textContent =
-                "Nenhuma tarefa pendente.";
-
-        } else if (currentFilter === "completed") {
-
-            icon.className = "bi bi-clipboard-check";
-
-            paragraph.textContent =
-                "Nenhuma tarefa concluída.";
-
-        }
-
-
-        emptyMessage.appendChild(icon);
-
-        emptyMessage.appendChild(paragraph);
-
-        taskList.appendChild(emptyMessage);
-
-        return;
-
+    if (currentFilter === "pending") {
+        filteredTasks = filteredTasks.filter(
+            task => !task.completed
+        );
     }
 
-
-    // Percorre as tarefas
-    filteredTasks.forEach(function (task) {
-
-        const taskItem = document.createElement("div");
-
-        taskItem.className = "task-item";
-
-
-        if (task.completed) {
-
-            taskItem.classList.add("completed");
-
-        }
-
-
-        // Checkbox
-        const checkbox = document.createElement("input");
-
-        checkbox.type = "checkbox";
-
-        checkbox.className = "task-checkbox";
-
-        checkbox.checked = task.completed;
-
-        checkbox.setAttribute(
-            "aria-label",
-            "Marcar tarefa como concluída"
+    if (currentFilter === "completed") {
+        filteredTasks = filteredTasks.filter(
+            task => task.completed
         );
+    }
 
-        checkbox.addEventListener("change", function () {
+    if (filteredTasks.length === 0) {
 
-            toggleTask(task.id);
+        taskList.innerHTML = `
+            <div class="empty-message">
+                <i class="bi bi-clipboard-x"></i>
+                <p>Nenhuma tarefa encontrada.</p>
+            </div>
+        `;
 
-        });
+        return;
+    }
 
+    taskList.innerHTML = filteredTasks.map(task => {
 
-        // Nome
-        const taskTitle = document.createElement("h3");
+        const overdue = isTaskOverdue(task);
 
-        taskTitle.className = "task-title";
+        return `
+            <div class="task-item ${overdue ? "is-overdue" : ""} ${task.completed ? "completed" : ""}">
 
-        taskTitle.textContent = task.title;
+                <div class="task-info">
 
+                    <label class="task-label">
 
-        // Prioridade
-        const taskPriorityElement = document.createElement("span");
+                        <input
+                            type="checkbox"
+                            class="task-checkbox"
+                            ${task.completed ? "checked" : ""}
+                            onchange="toggleTask(${Number(task.id)})"
+                        >
 
-        taskPriorityElement.className =
-            `task-priority priority-${task.priority}`;
+                        <span class="task-title">
+                            ${escapeHTML(task.title)}
+                        </span>
 
-        taskPriorityElement.textContent =
-            formatPriority(task.priority);
+                    </label>
 
+                    ${overdue ? `
+                        <span class="overdue-alert">
+                            <i class="bi bi-exclamation-circle"></i>
+                            ATRASADA
+                        </span>
+                    ` : ""}
 
-        // Prazo
-        const taskDeadlineElement = document.createElement("span");
+                    <div class="task-details">
 
-        taskDeadlineElement.className = "task-deadline";
+                        <span class="task-priority priority-${escapeHTML(task.priority)}">
+                            ${formatPriority(task.priority)}
+                        </span>
 
-        taskDeadlineElement.textContent =
-            formatDate(task.deadline);
+                        <span class="task-deadline ${overdue ? "is-overdue" : ""}">
 
+                            <i class="bi bi-calendar"></i>
 
-        // Ações
-        const taskActions = document.createElement("div");
+                            ${formatDate(task.deadline)}
 
-        taskActions.className = "task-actions";
+                        </span>
 
+                    </div>
 
-        // Botão editar
-        const editButton = document.createElement("button");
+                </div>
 
-        editButton.type = "button";
+                <div class="task-actions">
 
-        editButton.className = "edit-task-btn";
+                    <button
+                        type="button"
+                        class="edit-task-btn"
+                        onclick="editTask(${Number(task.id)})"
+                        aria-label="Editar tarefa"
+                    >
+                        <i class="bi bi-pencil"></i>
+                    </button>
 
-        editButton.innerHTML =
-            '<i class="bi bi-pencil-fill"></i>';
+                    <button
+                        type="button"
+                        class="delete-task-btn"
+                        onclick="deleteTask(${Number(task.id)})"
+                        aria-label="Excluir tarefa"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button>
 
-        editButton.title = "Editar tarefa";
+                </div>
 
-        editButton.addEventListener("click", function () {
+            </div>
+        `;
 
-            editTask(task.id);
-
-        });
-
-
-        // Botão excluir
-        const deleteButton = document.createElement("button");
-
-        deleteButton.type = "button";
-
-        deleteButton.className = "delete-task-btn";
-
-        deleteButton.innerHTML =
-            '<i class="bi bi-trash-fill"></i>';
-
-        deleteButton.title = "Excluir tarefa";
-
-        deleteButton.addEventListener("click", function () {
-
-            deleteTask(task.id);
-
-        });
-
-
-        // Organiza os botões
-        taskActions.appendChild(editButton);
-
-        taskActions.appendChild(deleteButton);
-
-
-        // Monta o cartão
-        taskItem.appendChild(checkbox);
-
-        taskItem.appendChild(taskTitle);
-
-        taskItem.appendChild(taskPriorityElement);
-
-        taskItem.appendChild(taskDeadlineElement);
-
-        taskItem.appendChild(taskActions);
-
-
-        // Adiciona à lista
-        taskList.appendChild(taskItem);
-
-    });
-
+    }).join("");
 }
+
+
+/* ========================================
+   EVENTOS DO MODAL
+======================================== */
+
+modalCancelBtn.addEventListener("click", closeModal);
+
+modalConfirmBtn.addEventListener("click", confirmModalAction);
+
+taskModal.addEventListener("click", event => {
+
+    if (event.target === taskModal) {
+        closeModal();
+    }
+
+});
+
+document.addEventListener("keydown", event => {
+
+    if (
+        event.key === "Escape" &&
+        taskModal.classList.contains("active")
+    ) {
+        closeModal();
+    }
+
+    if (
+        event.key === "Enter" &&
+        modalMode === "edit" &&
+        taskModal.classList.contains("active") &&
+        event.target === modalTaskInput
+    ) {
+        confirmModalAction();
+    }
+
+});
 
 
 /* ========================================
    EVENTOS DOS FILTROS
 ======================================== */
 
-filterButtons.forEach(function (button) {
+document.querySelectorAll("[data-filter]").forEach(button => {
 
-    button.addEventListener("click", function () {
-
+    button.addEventListener("click", () => {
         filterTasks(button.dataset.filter);
-
     });
 
 });
@@ -556,11 +572,61 @@ taskForm.addEventListener("submit", addTask);
 
 
 /* ========================================
-   INICIALIZAÇÃO DO SISTEMA
+   INICIALIZAÇÃO
 ======================================== */
 
-// Exibe as tarefas salvas
+updateCurrentDate();
 renderTasks();
-
-// Atualiza os cartões e o progresso
 updateDashboard();
+
+
+
+/* ========================================
+   ALTERNAR TEMA CLARO E ESCURO
+======================================== */
+
+const themeToggle = document.getElementById("theme-toggle");
+
+function applyTheme(theme) {
+    document.body.setAttribute("data-theme", theme);
+
+    if (theme === "dark") {
+        themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+
+        themeToggle.setAttribute(
+            "aria-label",
+            "Ativar tema claro"
+        );
+    } else {
+        themeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+
+        themeToggle.setAttribute(
+            "aria-label",
+            "Ativar tema escuro"
+        );
+    }
+}
+
+// Carregar tema salvo
+const savedTheme = localStorage.getItem("theme") || "light";
+
+applyTheme(savedTheme);
+
+// Alternar tema ao clicar
+themeToggle.addEventListener("click", () => {
+    const currentTheme = document.body.getAttribute("data-theme");
+
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+    applyTheme(newTheme);
+
+    localStorage.setItem("theme", newTheme);
+});
+
+/* ========================================
+   ATUALIZAR ANO DO RODAPÉ
+======================================== */
+
+const currentYear = document.getElementById("current-year");
+
+currentYear.textContent = new Date().getFullYear();
