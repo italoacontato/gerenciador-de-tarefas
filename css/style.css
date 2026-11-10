@@ -737,7 +737,345 @@ body {
     outline-offset: 3px;
 }
 
+/* ========================================
+   MODAL DE EDIÇÃO E EXCLUSÃO
+======================================== */
 
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+/* CONTEÚDO DO MODAL */
+
+.modal-content {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 35px 30px;
+
+    background-color: var(--white);
+    border-radius: 16px;
+
+    text-align: center;
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+
+    animation: modalAppear 0.25s ease;
+}
+
+/* ÍCONE */
+
+.modal-icon {
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 18px;
+
+    border-radius: 50%;
+
+    background-color: #e8efff;
+    color: var(--navy);
+
+    font-size: 28px;
+}
+
+.modal-icon.delete {
+    background-color: #fde8e8;
+    color: var(--primary);
+}
+
+/* TÍTULO E MENSAGEM */
+
+.modal-content h2 {
+    margin-bottom: 10px;
+
+    color: var(--navy);
+    font-size: 21px;
+}
+
+.modal-content p {
+    margin-bottom: 22px;
+
+    color: var(--text-light);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* CAMPO DE EDIÇÃO */
+
+.modal-input-group {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.modal-input-group label {
+    display: block;
+    margin-bottom: 8px;
+
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.modal-input-group input {
+    width: 100%;
+    padding: 13px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    outline: none;
+
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-input-group input:focus {
+    border-color: var(--primary);
+
+    box-shadow: 0 0 0 3px rgba(237, 28, 46, 0.10);
+}
+
+/* BOTÕES */
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.modal-actions button {
+    flex: 1;
+
+    padding: 12px 15px;
+
+    border: none;
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+/* CANCELAR */
+
+#modal-cancel-btn {
+    background-color: #edf0f5;
+    color: var(--navy);
+}
+
+#modal-cancel-btn:hover {
+    background-color: #dfe4ec;
+}
+
+/* CONFIRMAR E SALVAR */
+
+#modal-confirm-btn {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+#modal-confirm-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* ANIMAÇÃO */
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 425px) {
+
+    .modal-content {
+        padding: 28px 20px;
+    }
+
+    .modal-content h2 {
+        font-size: 19px;
+    }
+
+    .modal-actions {
+        gap: 8px;
+    }
+
+    .modal-actions button {
+        padding: 12px 8px;
+        font-size: 12px;
+    }
+
+}
+
+
+/* ========================================
+   CAMPOS DO MODAL DE EDIÇÃO
+======================================== */
+
+.modal-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.modal-field label {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.modal-field input,
+.modal-field select {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 13px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    outline: none;
+
+    background-color: var(--white);
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-field input:focus,
+.modal-field select:focus {
+    border-color: var(--primary);
+
+    box-shadow: 0 0 0 3px rgba(237, 28, 46, 0.10);
+}
+
+/* RESPONSIVIDADE DOS CAMPOS */
+
+@media (max-width: 425px) {
+
+    .modal-input-group {
+        gap: 13px;
+    }
+
+    .modal-field input,
+    .modal-field select {
+        font-size: 13px;
+    }
+
+}
+
+/* ========================================
+   ALERTA DE TAREFA ATRASADA
+======================================== */
+
+.task-item.is-overdue {
+    border-left: 4px solid var(--red);
+}
+
+.overdue-alert {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 6px;
+    background-color: #ffe5e5;
+    color: #c91425;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+.task-deadline.is-overdue {
+    color: var(--red);
+    font-weight: 700;
+}
+
+/* ========================================
+   CAMPOS DO MODAL
+======================================== */
+
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-input-group select,
+.modal-input-group input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    background-color: var(--white);
+    color: var(--text);
+    transition: 0.2s;
+}
+
+.modal-input-group select:focus,
+.modal-input-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(237, 28, 46, 0.1);
+}
+
+@media (max-width: 425px) {
+    .modal-content {
+        width: 90%;
+        padding: 25px 20px;
+    }
+
+    .overdue-alert {
+        font-size: 10px;
+        padding: 4px 7px;
+    }
+}
 
 /* ========================================
    RESPONSIVIDADE
@@ -979,4 +1317,500 @@ body {
         font-size: 13px;
     }
 
+}
+
+/* ========================================
+   CORREÇÕES DOS CARTÕES DE TAREFAS
+======================================== */
+
+.task-info {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+}
+
+.task-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.task-label .task-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-details {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* CHECKBOX */
+
+.task-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+
+    border: 2px solid #aab3ca;
+    border-radius: 7px;
+
+    background-color: var(--white);
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.3s ease;
+}
+
+.task-checkbox:checked {
+    background-color: #1670df;
+    border-color: #1670df;
+}
+
+.task-checkbox:checked::after {
+    content: "✓";
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* BOTÕES DE AÇÃO */
+
+.edit-task-btn,
+.delete-task-btn {
+    width: 46px;
+    height: 44px;
+
+    border: none;
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 19px;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.edit-task-btn {
+    background-color: #e9ebf5;
+    color: var(--navy);
+}
+
+.edit-task-btn:hover {
+    background-color: #d9deed;
+    transform: translateY(-2px);
+}
+
+.delete-task-btn {
+    background-color: #fff0f2;
+    color: var(--red);
+    border: 1px solid #ffd0d6;
+}
+
+.delete-task-btn:hover {
+    background-color: #ffe0e4;
+    transform: translateY(-2px);
+}
+
+/* PROGRESSO */
+
+.progress-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.progress-content p {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+/* MODAL */
+
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.modal-input-group input,
+.modal-input-group select {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 13px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    outline: none;
+    background-color: var(--white);
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.modal-input-group input:focus,
+.modal-input-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(237, 28, 46, 0.1);
+}
+
+/* ALERTA DE ATRASO */
+
+.task-item.is-overdue {
+    border-left: 4px solid var(--red);
+}
+
+.overdue-alert {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 5px 9px;
+    border-radius: 6px;
+
+    background-color: #ffe5e5;
+    color: #c91425;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.task-deadline.is-overdue {
+    color: var(--red);
+    font-weight: 700;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 600px) {
+
+    .task-info {
+        width: 100%;
+    }
+
+    .task-label {
+        width: 100%;
+    }
+
+    .task-details {
+        padding-left: 37px;
+    }
+
+    .edit-task-btn,
+    .delete-task-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+
+    .progress-content {
+        width: 100%;
+    }
+
+    .progress-content p {
+        font-size: 13px;
+    }
+
+}
+
+/* ========================================
+   BOTÃO DE ALTERNÂNCIA DE TEMA
+======================================== */
+
+.theme-toggle {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--white);
+
+    font-size: 21px;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.23);
+    transform: translateY(-2px);
+}
+
+
+/* ========================================
+   TEMA ESCURO
+======================================== */
+
+body[data-theme="dark"] {
+    --background: #151b2b;
+    --white: #222c40;
+
+    --navy: #e5eaf5;
+    --text: #e5eaf5;
+    --text-light: #aab6cc;
+
+    --border: #354159;
+
+    background-color: var(--background);
+    color: var(--text);
+}
+
+/* CARTÕES DO PAINEL */
+
+body[data-theme="dark"] .summary-card {
+    background-color: #222c40;
+    border-color: #354159;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="dark"] .summary-info h2 {
+    color: #cbd5e5;
+}
+
+body[data-theme="dark"] .total-card .summary-info span,
+body[data-theme="dark"] .completed-card .summary-info span,
+body[data-theme="dark"] .pending-card .summary-info span,
+body[data-theme="dark"] .overdue-card .summary-info span {
+    color: #f1f4fc;
+}
+
+/* PROGRESSO */
+
+body[data-theme="dark"] .progress-section,
+body[data-theme="dark"] .task-manager {
+    background-color: #222c40;
+}
+
+body[data-theme="dark"] .progress-bar {
+    background-color: #354159;
+}
+
+body[data-theme="dark"] .progress-header h2,
+body[data-theme="dark"] .progress-header span {
+    color: #f1f4fc;
+}
+
+/* FORMULÁRIO */
+
+body[data-theme="dark"] .input-group {
+    background-color: #1a2437;
+    border-color: #354159;
+}
+
+body[data-theme="dark"] .input-group i {
+    color: #b8c5da;
+}
+
+body[data-theme="dark"] .input-group input,
+body[data-theme="dark"] .input-group select {
+    color: #f1f4fc;
+}
+
+body[data-theme="dark"] .input-group input::placeholder {
+    color: #9aa8bf;
+}
+
+body[data-theme="dark"] .input-group input[type="date"] {
+    color: #f1f4fc;
+}
+
+body[data-theme="dark"] .input-group select option {
+    background-color: #222c40;
+    color: #f1f4fc;
+}
+
+/* FILTROS */
+
+body[data-theme="dark"] .filter-btn {
+    background-color: #354159;
+    color: #e5eaf5;
+}
+
+body[data-theme="dark"] .filter-btn:hover {
+    background-color: #43516c;
+}
+
+body[data-theme="dark"] .filter-btn.active {
+    background-color: var(--primary-dark);
+    color: #ffffff;
+}
+
+/* TAREFAS */
+
+body[data-theme="dark"] .task-item {
+    background-color: #1a2437;
+    border-color: #354159;
+    color: #e5eaf5;
+}
+
+body[data-theme="dark"] .task-item:hover {
+    border-color: #65748e;
+}
+
+body[data-theme="dark"] .task-title {
+    color: #e5eaf5;
+}
+
+body[data-theme="dark"] .task-item.completed {
+    background-color: #1d352f;
+    border-color: #315b4b;
+}
+
+body[data-theme="dark"] .task-item.completed .task-title {
+    color: #a9c8b9;
+}
+
+body[data-theme="dark"] .task-deadline {
+    color: #b8c5da;
+}
+
+/* BOTÕES DE AÇÃO */
+
+body[data-theme="dark"] .edit-task-btn {
+    background-color: #354159;
+    color: #e5eaf5;
+}
+
+body[data-theme="dark"] .edit-task-btn:hover {
+    background-color: #43516c;
+}
+
+body[data-theme="dark"] .delete-task-btn {
+    background-color: #442b38;
+    border-color: #70404b;
+    color: #ff8794;
+}
+
+/* MENSAGEM DE LISTA VAZIA */
+
+body[data-theme="dark"] .empty-message {
+    color: #aab6cc;
+}
+
+/* MODAL */
+
+body[data-theme="dark"] .modal-content {
+    background-color: #222c40;
+    color: #e5eaf5;
+}
+
+body[data-theme="dark"] .modal-content h2,
+body[data-theme="dark"] .modal-input-group label {
+    color: #f1f4fc;
+}
+
+body[data-theme="dark"] .modal-content p {
+    color: #aab6cc;
+}
+
+body[data-theme="dark"] .modal-input-group input,
+body[data-theme="dark"] .modal-input-group select,
+body[data-theme="dark"] .modal-field input,
+body[data-theme="dark"] .modal-field select {
+    background-color: #1a2437;
+    border-color: #354159;
+    color: #f1f4fc;
+}
+
+body[data-theme="dark"] #modal-cancel-btn {
+    background-color: #354159;
+    color: #f1f4fc;
+}
+
+body[data-theme="dark"] #modal-cancel-btn:hover {
+    background-color: #43516c;
+}
+
+/* TRANSIÇÃO ENTRE TEMAS */
+
+body,
+.summary-card,
+.progress-section,
+.task-manager,
+.input-group,
+.task-item,
+.filter-btn,
+.modal-content {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 600px) {
+    .theme-toggle {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+}
+
+
+/* ========================================
+   RODAPÉ
+======================================== */
+
+.site-footer {
+    width: 100%;
+    padding: 22px 15px;
+
+    background-color: var(--navy);
+    color: var(--white);
+
+    text-align: center;
+    font-size: 14px;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+/* TEMA ESCURO */
+
+body[data-theme="dark"] .site-footer {
+    background-color: #101827;
+    color: #cbd5e5;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 600px) {
+    .site-footer {
+        padding: 18px 12px;
+        font-size: 12px;
+    }
 }
