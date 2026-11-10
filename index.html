@@ -36,6 +36,10 @@
                 <span id="current-date">10 de Novembro de 2026</span>
             </div>
 
+            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar tema escuro">
+                <i class="bi bi-moon-stars-fill"></i>
+            </button>
+
 
         </div>
 
@@ -119,19 +123,15 @@
         <!-- PROGRESSO -->
         <section class="progress-section">
 
-
             <div class="progress-header">
-
                 <h2>Progresso</h2>
-
                 <span id="progress-percentage">0%</span>
-
             </div>
 
-            <div class="progress-bar">
+            <div class="progress-content">
 
-                <div class="progress-fill" id="progress-fill">
-
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
                 </div>
 
                 <p id="progress-text">
@@ -139,7 +139,6 @@
                 </p>
 
             </div>
-
 
         </section>
 
@@ -192,7 +191,7 @@
 
                     <i class="bi bi-plus-lg"></i>
 
-                    Adicionr
+                    Adicionar
 
                 </button>
 
@@ -245,6 +244,58 @@
 
     </main>
 
+
+    <!-- MODAL DE EDIÇÃO E EXCLUSÃO -->
+    <div class="modal-overlay" id="task-modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+
+            <div class="modal-icon" id="modal-icon">
+                <i class="bi bi-pencil-square"></i>
+            </div>
+
+            <h2 id="modal-title">Editar tarefa</h2>
+            <p id="modal-message">Altere os dados da sua tarefa.</p>
+
+            <!-- NOME -->
+            <div class="modal-input-group" id="modal-input-group">
+                <label for="modal-task-input">Nome da tarefa</label>
+                <input type="text" id="modal-task-input" placeholder="Digite o nome da tarefa..." autocomplete="off">
+            </div>
+
+            <!-- PRIORIDADE -->
+            <div class="modal-input-group" id="modal-priority-group">
+                <label for="modal-task-priority">Prioridade</label>
+                <select id="modal-task-priority">
+                    <option value="alta">Alta</option>
+                    <option value="media">Média</option>
+                    <option value="baixa">Baixa</option>
+                </select>
+            </div>
+
+            <!-- PRAZO -->
+            <div class="modal-input-group" id="modal-deadline-group">
+                <label for="modal-task-deadline">Prazo</label>
+                <input type="date" id="modal-task-deadline">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="modal-cancel-btn">Cancelar</button>
+                <button type="button" id="modal-confirm-btn">
+                    Salvar alterações
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- RODAPÉ -->
+    <footer class="site-footer">
+        <p>
+            &copy; <span id="current-year"></span>
+            Gerenciador de Tarefas. Todos os direitos reservados.
+        </p>
+    </footer>
 
     <!-- JAVASCRIPT -->
     <script src="js/script.js"></script>
