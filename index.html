@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Gerenciador de Tarefas</title>
+</head>
+
+<body>
+
+
+    <!-- CABEÇALHO -->
+    <header class="header">
+
+        <div class="header-content">
+
+
+            <div class="header-logo">
+                <i class="bi bi-check-lg"></i>
+            </div>
+
+            <div class="header-text">
+                <h1>Gerenciador de Tarefas</h1>
+                <p>Organize suas tarefas e acompanhe seu progresso!</p>
+            </div>
+
+            <div class="header-date">
+                <i class="bi bi-calendar3"></i>
+                <span id="current-date">10 de Novembro de 2026</span>
+            </div>
+
+
+        </div>
+
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL - MAIN -->
+    <main class="container">
+
+        <!-- RESUMO DAS TAREFAS -->
+        <section class="task-summary">
+
+
+            <!-- TOTAL DE TAREFAS -->
+            <div class="summary-card total-card">
+
+
+                <div class="summary-icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+
+                <div class="summary-info">
+                    <h2>Total de Tarefas</h2>
+                    <span id="total-tasks">0</span>
+                </div>
+
+
+            </div>
+
+            <!-- TAREFAS CONCLUÍDAS -->
+            <div class="summary-card completed-card">
+
+
+                <div class="summary-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+
+                <div class="summary-info">
+                    <h2>Concluídas</h2>
+                    <span id="completed-tasks">0</span>
+                </div>
+
+
+            </div>
+
+            <!-- TAREFAS PENDENTES -->
+            <div class="summary-card pending-card">
+
+
+                <div class="summary-icon">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+
+                <div class="summary-info">
+                    <h2>Pendentes</h2>
+                    <span id="pending-tasks">0</span>
+                </div>
+
+
+            </div>
+
+            <!-- TAREFAS ATRASADAS -->
+            <div class="summary-card overdue-card">
+
+
+                <div class="summary-icon">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                </div>
+
+                <div class="summary-info">
+                    <h2>Atrasadas</h2>
+                    <span id="overdue-tasks">0</span>
+                </div>
+
+
+
+            </div>
+
+
+        </section>
+
+        <!-- PROGRESSO -->
+        <section class="progress-section">
+
+
+            <div class="progress-header">
+
+                <h2>Progresso</h2>
+
+                <span id="progress-percentage">0%</span>
+
+            </div>
+
+            <div class="progress-bar">
+
+                <div class="progress-fill" id="progress-fill">
+
+                </div>
+
+                <p id="progress-text">
+                    0 de 0 tarefas concluídas
+                </p>
+
+            </div>
+
+
+        </section>
+
+        <!-- GERENCIAMENTO DE TAREFAS -->
+        <section class="task-manager">
+
+
+            <!-- FORMULÁRIO DE CADASTRO -->
+            <form id="task-form" class="task-form">
+
+
+                <div class="input-group">
+
+                    <i class="bi bi-list-task"></i>
+
+                    <input type="text" id="task-input" placeholder="Digite uma nova tarefa..." autocomplete="off">
+
+                </div>
+
+                <!-- PRIORIDADE -->
+                <div class="input-group priority-group">
+
+                    <i class="bi bi-flag-fill"></i>
+
+
+                    <select id="task-priority">
+
+                        <option value="alta">Alta</option>
+
+                        <option value="media">Média</option>
+
+                        <option value="baixa">Baixa</option>
+
+
+                    </select>
+
+                </div>
+
+                <!-- PRAZO -->
+                <div class="input-group date-group">
+
+                    <i class="bi bi-calendar3"></i>
+
+                    <input type="date" id="task-deadline">
+
+                </div>
+
+                <!-- BOTÃO ADICIONAR -->
+                <button type="submit" id="add-task-btn">
+
+                    <i class="bi bi-plus-lg"></i>
+
+                    Adicionr
+
+                </button>
+
+
+            </form>
+
+            <!-- FILTROS -->
+            <div class="task-filters">
+
+                <button type="button" class="filter-btn active" data-filter="all">
+
+                    <i class="bi bi-grid-fill"></i>
+
+                    Todas
+
+                </button>
+
+
+                <button type="button" class="filter-btn" data-filter="pending">
+
+                    <i class="bi bi-clock"></i>
+                    Pendentes
+
+                </button>
+
+                <button type="button" class="filter-btn" data-filter="completed">
+
+                    <i class="bi bi-check-circle"></i>
+                    Concluídas
+
+                </button>
+
+            </div>
+
+            <!-- LISTA DE TAREFAS -->
+            <div class="task-list" id="task-list">
+
+                <!-- AS TAREFAS SERÃO INSERIDAS AQUI PELO JAVASCRIPT -->
+
+                <div class="empty-message">
+                    <i class="bi bi-clipboard-x"></i>
+                    <p>Nenhuma tarefa cadastrada.</p>
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="js/script.js"></script>
+
+
+</body>
+
+
+
+</html>
