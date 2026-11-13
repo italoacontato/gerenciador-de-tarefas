@@ -45,3 +45,6 @@ Este projeto foi desenvolvido como exercício prático de aprendizado, com o obj
 ## Autor
 
 Desenvolvido por Italo Alves.
+
+![alt text](gerenciados-de-tarefas-desktop.png)
+![alt text](gerenciados-de-tarefas-mobile.webp)
